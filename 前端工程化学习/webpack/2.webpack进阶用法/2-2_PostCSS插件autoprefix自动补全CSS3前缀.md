@@ -33,6 +33,8 @@
 - 依据`can i user`规则
 
 ```js
+// webpack.config.js
+
 module.exports = {
     entry: {
         app: './src/app.js',
@@ -49,21 +51,76 @@ module.exports = {
                 use: [
                     'style-loader',
                     'css-loader',
+                    'postcss-loader'，
                     'sass-loader',
-                    {
-                        loader: 'postcss-loader',
-                        options: {
-                            plugins: () => {
-                                require('autoprefixer')({
-                                    browers:['last 2 version','>1%','iOS 7']
-                                })
-                            }
-                        }
-                    }
                 ]
             }
         ]
     }
 };
+
+// 在根目录下建postcss.config.js
+module.exports = {
+    plugins: [
+        // postcss插件
+        require('autoprefixer')
+    ]
+}
 ```
 
+
+
+- 在根目录的`package.json`下添加`postcss`的配置项`browserslist`
+
+```json
+{
+  "name": "halo-webpack4.0",
+  "main": "index.js",
+  "scripts": {
+    "dev": "webpack-dev-server --config build/webpack.config.js --open",
+    "build-pro": "webpack --config ./build/webpack.prod.js --mode=production",
+    "build-dev": "webpack --config ./build/webpack.dev.js --mode=development"
+  },
+  "author": "yuanwenlai",
+  "browserslist": [
+    "> 1%",
+    "last 100 versions",
+    "not ie <= 8"
+  ]
+}
+
+```
+
+
+
+### 4、`PostCss`插件`autoprefixer`构建测试验证
+
+1. 建测试文件`index.css`，打包后查看打包的`css`文件是否增加前缀
+
+```css
+// index.css
+.container {
+    height: 100vh;
+    border-radius: 30px;
+    box-sizing:border-box;
+    background: rgb(158, 235, 224);
+    font-size: 56px;
+}
+```
+
+```css
+// index3ec78ca401afbe76f09b.css
+.container{
+    background:#9eebe0;
+    -webkit-border-radius:.4rem;
+    -moz-border-radius:.4rem;
+    border-radius:.4rem;
+    -webkit-box-sizing:border-box;
+    -moz-box-sizing:border-box;
+    box-sizing:border-box;
+    font-size:.74666667rem;
+    height:100vh
+}
+```
+
+构建测试结果：`postcss`构建`css`前缀成功！
